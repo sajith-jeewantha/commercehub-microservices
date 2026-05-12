@@ -1,13 +1,13 @@
-package com.sajithjeewantha.api_geteway;
+package com.sajithjeewantha.apigateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ApiGetewayApplicationTests {
+class ApiGatewayApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }

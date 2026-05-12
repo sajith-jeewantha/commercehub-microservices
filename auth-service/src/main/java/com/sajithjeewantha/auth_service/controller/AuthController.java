@@ -3,10 +3,8 @@ package com.sajithjeewantha.auth_service.controller;
 import com.sajithjeewantha.auth_service.model.AuthResponse;
 import com.sajithjeewantha.auth_service.model.LoginRequest;
 import com.sajithjeewantha.auth_service.model.RegisterRequest;
-import com.sajithjeewantha.auth_service.model.User;
 import com.sajithjeewantha.auth_service.service.user.AuthService;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-public class UserController {
+public class AuthController {
 
     private final AuthService authService;
 
@@ -36,7 +34,6 @@ public class UserController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public void register(@Valid @RequestBody RegisterRequest registerRequest) {
-        log.info("Received request to register a new user: {}", registerRequest);
         authService.register(registerRequest);
     }
 

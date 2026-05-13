@@ -3,19 +3,13 @@ package com.sajithjeewantha.auth_service.service.user.impl;
 
 import com.sajithjeewantha.auth_service.exception.EmailAlreadyExistsException;
 import com.sajithjeewantha.auth_service.exception.InvalidCredentialsException;
-import com.sajithjeewantha.auth_service.model.AuthResponse;
-import com.sajithjeewantha.auth_service.model.LoginRequest;
-import com.sajithjeewantha.auth_service.model.RegisterRequest;
-import com.sajithjeewantha.auth_service.model.User;
+import com.sajithjeewantha.auth_service.model.*;
 import com.sajithjeewantha.auth_service.repo.AuthRepository;
 import com.sajithjeewantha.auth_service.service.security.JwtService;
 import com.sajithjeewantha.auth_service.service.user.AuthService;
 import com.sajithjeewantha.shared_models.dto.user.Role;
-import com.sajithjeewantha.shared_models.dto.user.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,6 +45,7 @@ public class AuthServiceImpl implements AuthService {
         authRepository.save(user);
     }
 
+
     @Override
     @Transactional(readOnly = true)
     public AuthResponse authenticate(LoginRequest request) {
@@ -65,18 +60,15 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidCredentialsException("Invalid credentials");
         }
 
-        User user = authRepository.findByEmailEquals(request.email())
-                .orElseThrow(() ->
-                        new InvalidCredentialsException("Invalid credentials"));
-
-
-        String token = jwtService.generateToken(user);
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        String token = jwtService.generateToken(userPrincipal);
 
         return new AuthResponse(
                 token,
                 "Bearer",
-                user.getId(),
-                user.getEmail()
+                userPrincipal.getName(),
+                userPrincipal.getUsername()
         );
     }
+
 }

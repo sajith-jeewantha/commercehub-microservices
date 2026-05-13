@@ -1,12 +1,14 @@
 package com.sajithjeewantha.auth_service.service.security;
 
 import com.sajithjeewantha.auth_service.model.User;
+import com.sajithjeewantha.auth_service.model.UserPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -30,16 +32,20 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
-    public String generateToken(User user) {
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("name", user.getName());
-        claims.put("email", user.getEmail());
-        claims.put("roles", user.getRoles());
+
+        if (userDetails instanceof UserPrincipal principal) {
+            claims.put("email", principal.getUsername());
+            claims.put("roles", principal.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList());
+        }
 
         return Jwts.builder()
                 .claims()
                 .add(claims)
-                .subject(user.getEmail())
+                .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .and()
